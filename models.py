@@ -1,6 +1,6 @@
 import peewee as pw
 
-db = pw.SqliteDatabase('database.db')
+db = pw.SqliteDatabase('krasunya.db')
 
 
 class BaseModel(pw.Model):
@@ -10,7 +10,7 @@ class BaseModel(pw.Model):
 class Master(BaseModel):
     """Майстер"""
 
-    id_master = pw.IntegerField(primary_key = True, null = False, unique = True)
+    id_master = pw.AutoField()
     first_name = pw.TextField(null = False)
     middle_name = pw.TextField()
     last_name = pw.TextField(null = False)
@@ -25,7 +25,7 @@ class Master(BaseModel):
 class Service(BaseModel):
     """Послуга"""
 
-    id_service = pw.IntegerField(primary_key = True, null = False, unique = True)
+    id_service = pw.AutoField()
     title = pw.TextField(null = False)
     cost = pw.IntegerField(null = False)
 
@@ -47,7 +47,7 @@ class Service_has_Master(BaseModel):
 class Client(BaseModel):
     """Клієнт"""
 
-    id_client = pw.IntegerField(primary_key = True, null = False, unique = True)
+    id_client = pw.AutoField()
     phone_number = pw.TextField(null = False)
     first_name = pw.TextField(null = False)
     middle_name = pw.TextField()
@@ -61,7 +61,7 @@ class Client(BaseModel):
 class Booking(BaseModel):
     """Запис"""
 
-    id_booking = pw.IntegerField(primary_key = True, null = False, unique = True)
+    id_booking = pw.AutoField()
     date_time = pw.DateTimeField(null = False)
     cost = pw.IntegerField(null = False)
 
@@ -76,6 +76,6 @@ class Booking(BaseModel):
 
 def create_tables():
     with db:
-        db.create_tables([Booking])
+        db.create_tables([Booking, Master, Client, Service, Service_has_Master])
 
 #create_tables()
