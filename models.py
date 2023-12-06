@@ -7,32 +7,6 @@ class BaseModel(pw.Model):
     class Meta:
         database = db
 
-
-class Service(BaseModel):
-    """Послуга"""
-
-    id_service = pw.IntegerField(primary_key = True, null = False, unique = True)
-    title = pw.TextField(null = False)
-    cost = pw.IntegerField(null = False)
-
-    class Meta:
-        order_by = 'id_service'
-        db_table = 'services'
-
-
-class Booking(BaseModel):
-    """Запис"""
-
-    id_booking = pw.IntegerField(primary_key = True, null = False, unique = True)
-    date_time = pw.DateTimeField(null = False)
-    cost = pw.IntegerField(null = False)
-
-    class Meta:
-        order_by = 'id_booking'
-        db_table = 'bookoings'
-
-
-
 class Master(BaseModel):
     """Майстер"""
 
@@ -48,6 +22,28 @@ class Master(BaseModel):
         db_table = 'masters'
 
 
+class Service(BaseModel):
+    """Послуга"""
+
+    id_service = pw.IntegerField(primary_key = True, null = False, unique = True)
+    title = pw.TextField(null = False)
+    cost = pw.IntegerField(null = False)
+
+    class Meta:
+        order_by = 'id_service'
+        db_table = 'services'
+
+
+class Service_has_Master(BaseModel):
+    """"Зв'язок багато до багатьох між Service та Master"""
+
+    service_id = pw.ForeignKeyField(Service)
+    master_id = pw.ForeignKeyField(Master)
+
+    class Meta:
+        db_table = 'services_have_masters'
+
+
 class Client(BaseModel):
     """Клієнт"""
 
@@ -60,3 +56,26 @@ class Client(BaseModel):
     class Meta:
         order_by = 'id_client'
         db_table = 'clients'
+
+
+class Booking(BaseModel):
+    """Запис"""
+
+    id_booking = pw.IntegerField(primary_key = True, null = False, unique = True)
+    date_time = pw.DateTimeField(null = False)
+    cost = pw.IntegerField(null = False)
+
+    client_id = pw.ForeignKeyField(Client, backref = 'bookings')
+    master_id = pw.ForeignKeyField(Master, backref = 'bookings')
+
+    class Meta:
+        order_by = 'id_booking'
+        db_table = 'bookings'
+
+
+
+def create_tables():
+    with db:
+        db.create_tables([Booking])
+
+#create_tables()
