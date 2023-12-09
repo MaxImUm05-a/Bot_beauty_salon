@@ -3,16 +3,18 @@ from models import *
 def see_services_and_prices():
     """Подивитися послуги і ціни на їх"""
 
-    query = (Service
-             .select(Service, Master)
-             .join(Service_has_Master)
-             .join(Master)
-             .where(Service.title == 'стрижка'))
+    with db:
+        serv_price = []
 
-    print('done')
+        servs = Service.select()
 
-    for q in query:
-        print(q)
+        for serv in servs:
+            serv_price.append([])
+            serv_price[-1].append(serv.id_service)
+            serv_price[-1].append(serv.title)
+            serv_price[-1].append(serv.cost)
+
+    return serv_price
 
 
 
@@ -26,7 +28,23 @@ def zapys():
         pass
 
 def see_masters():
-    pass
+    """Подивитися майстрів"""
+
+    with db:
+        mstrs = []
+
+        masters = Master.select()
+
+        for master in masters:
+            mstrs.append([])
+            mstrs[-1].append(master.id_master)
+            mstrs[-1].append(master.name)
+            mstrs[-1].append(master.specialty)
+            mstrs[-1].append(master.experience)
+
+    return mstrs
+
+
 
 def see_zapys():
     pass
@@ -39,5 +57,11 @@ def add_service():
     with db:
         Service(title='стрижка', cost=100).save()
 
+def add_master():
 
-see_services_and_prices()
+    with db:
+        Master(name = 'Стефанія', specialty = 'перукар', experience = 2).save()
+
+
+#see_services_and_prices()
+#add_master()
