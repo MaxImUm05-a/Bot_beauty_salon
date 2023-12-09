@@ -44,12 +44,50 @@ def get_text(message):
         btn = []
         for mt in masters:
             btn.append(types.InlineKeyboardButton(text='Ім\'я: '+mt[1] + ' Спеціальність: ' + str(mt[2]) + ' Досвід: ' + '%s р.' % mt[3],
-                                                  callback_data='serv' + str(mt[0])))
+                                                  callback_data='mast' + str(mt[0])))
 
         for rah in range(len(btn)):
             kb.add(btn[rah])
 
-        msg = bot.send_message(message.chat.id, 'Ось наші майстри:', reply_markup=kb)
+        bot.send_message(message.chat.id, 'Ось наші майстри:', reply_markup=kb)
+
+
+@bot.callback_query_handler(func = lambda call: True)
+def callback(call):
+    if 'serv' in call.data:
+        serv_id = int(call.data[4:])
+        masters_id = dat.get_masters_from_serv(serv_id)
+        masters = []
+        for master_id in masters_id:
+            masters.append(dat.get_masters_from_master(master_id))
+
+        kb = types.InlineKeyboardMarkup(row_width=3)
+        btn = []
+        for mt in masters:
+            btn.append(types.InlineKeyboardButton(
+                text='Ім\'я: ' + mt[1] + ' Спеціальність: ' + str(mt[2]) + ' Досвід: ' + '%s р.' % mt[3],
+                callback_data='ms_book' + str(mt[0])))         #ще потрібно зберігати послугу
+        for rah in range(len(btn)):
+            kb.add(btn[rah])
+
+        bot.send_message(call.message.chat.id, 'Ось наші майстри, які пропонують цю послугу:', reply_markup=kb)
+
+    if 'mast' in call.data:
+        print('done')
+        mast_id = int(call.data[4:])
+        services_id = dat.get_services_from_mast(mast_id)
+        services = []
+        for service_id in services_id:
+            services.append(dat.get_services_from_service(service_id))
+
+        kb = types.InlineKeyboardMarkup(row_width=3)
+        btn = []
+        for sv in services:
+            btn.append(types.InlineKeyboardButton(text = sv[1]+'\n'+'Ціна: '+str(sv[2]), callback_data = 'sv_book'+str(sv[0])))
+        for rah in range(len(btn)):
+            kb.add(btn[rah])
+
+        bot.send_message(call.message.chat.id, 'Ось послуги, які пропонує цей майстер', reply_markup=kb)
 
 
 @bot.message_handler(commands=['zapys'])
