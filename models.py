@@ -11,9 +11,7 @@ class Master(BaseModel):
     """Майстер"""
 
     id_master = pw.AutoField()
-    first_name = pw.TextField(null = False)
-    middle_name = pw.TextField()
-    last_name = pw.TextField(null = False)
+    name = pw.TextField(null = False)
     specialty = pw.TextField(null = False)
     experience = pw.FloatField(null = False)
 
@@ -49,9 +47,7 @@ class Client(BaseModel):
 
     id_client = pw.AutoField()
     phone_number = pw.TextField(null = False)
-    first_name = pw.TextField(null = False)
-    middle_name = pw.TextField()
-    last_name = pw.TextField(null = False)
+    name = pw.TextField(null = False)
 
     class Meta:
         order_by = 'id_client'
@@ -73,9 +69,32 @@ class Booking(BaseModel):
         db_table = 'bookings'
 
 
+class Schedule(BaseModel):
+    """Розклад роботи майстрів"""
+
+    date = pw.DateField(null = False)
+    t08_09 = pw.IntegerField()
+    t09_10 = pw.IntegerField()
+    t10_11 = pw.IntegerField()
+    t11_12 = pw.IntegerField()
+    t12_13 = pw.IntegerField()
+    t13_14 = pw.IntegerField()
+    t14_15 = pw.IntegerField()
+    t15_16 = pw.IntegerField()
+    t16_17 = pw.IntegerField()
+    t17_18 = pw.IntegerField()
+    t18_19 = pw.IntegerField()
+    t19_20 = pw.IntegerField()
+    master_id = pw.ForeignKeyField(Master, backref = 'schedules')
+
+    class Meta:
+        db_table = 'schedules'
+
+
 
 def create_tables():
     with db:
-        db.create_tables([Booking, Master, Client, Service, Service_has_Master])
+        #db.create_tables([Booking, Master, Client, Service, Service_has_Master])
+        db.create_tables([Schedule])
 
-#create_tables()
+create_tables()
