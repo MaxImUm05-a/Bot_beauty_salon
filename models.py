@@ -1,6 +1,6 @@
 import peewee as pw
 
-db = pw.SqliteDatabase('krasunya.db')
+db = pw.SqliteDatabase('krasunya2.db')
 
 
 class BaseModel(pw.Model):
@@ -59,10 +59,10 @@ class Booking(BaseModel):
 
     id_booking = pw.AutoField()
     date_time = pw.DateTimeField(null = False)
-    cost = pw.IntegerField(null = False)
 
     client_id = pw.ForeignKeyField(Client, backref = 'bookings')
     master_id = pw.ForeignKeyField(Master, backref = 'bookings')
+    service_id = pw.ForeignKeyField(Service, backref='bookings')
 
     class Meta:
         order_by = 'id_booking'
@@ -73,18 +73,30 @@ class Schedule(BaseModel):
     """Розклад роботи майстрів"""
 
     date = pw.DateField(null = False)
-    t08_09 = pw.ForeignKeyField(Booking)
-    t09_10 = pw.ForeignKeyField(Booking)
-    t10_11 = pw.ForeignKeyField(Booking)
-    t11_12 = pw.ForeignKeyField(Booking)
-    t12_13 = pw.ForeignKeyField(Booking)
-    t13_14 = pw.ForeignKeyField(Booking)
-    t14_15 = pw.ForeignKeyField(Booking)
-    t15_16 = pw.ForeignKeyField(Booking)
-    t16_17 = pw.ForeignKeyField(Booking)
-    t17_18 = pw.ForeignKeyField(Booking)
-    t18_19 = pw.ForeignKeyField(Booking)
-    t19_20 = pw.ForeignKeyField(Booking)
+    # t08_09 = pw.ForeignKeyField(Booking)
+    # t09_10 = pw.ForeignKeyField(Booking)
+    # t10_11 = pw.ForeignKeyField(Booking)
+    # t11_12 = pw.ForeignKeyField(Booking)
+    # t12_13 = pw.ForeignKeyField(Booking)
+    # t13_14 = pw.ForeignKeyField(Booking)
+    # t14_15 = pw.ForeignKeyField(Booking)
+    # t15_16 = pw.ForeignKeyField(Booking)
+    # t16_17 = pw.ForeignKeyField(Booking)
+    # t17_18 = pw.ForeignKeyField(Booking)
+    # t18_19 = pw.ForeignKeyField(Booking)
+    # t19_20 = pw.ForeignKeyField(Booking)
+    t08_09 = pw.IntegerField(null=True)
+    t09_10 = pw.IntegerField(null=True)
+    t10_11 = pw.IntegerField(null=True)
+    t11_12 = pw.IntegerField(null=True)
+    t12_13 = pw.IntegerField(null=True)
+    t13_14 = pw.IntegerField(null=True)
+    t14_15 = pw.IntegerField(null=True)
+    t15_16 = pw.IntegerField(null=True)
+    t16_17 = pw.IntegerField(null=True)
+    t17_18 = pw.IntegerField(null=True)
+    t18_19 = pw.IntegerField(null=True)
+    t19_20 = pw.IntegerField(null=True)
     master_id = pw.ForeignKeyField(Master, backref = 'schedules')
 
     class Meta:
@@ -94,7 +106,7 @@ class Schedule(BaseModel):
 
 def create_tables():
     with db:
-        #db.create_tables([Booking, Master, Client, Service, Service_has_Master])
+        db.create_tables([Booking, Master, Client, Service, Service_has_Master])
         db.create_tables([Schedule])
 
-create_tables()
+#create_tables()
