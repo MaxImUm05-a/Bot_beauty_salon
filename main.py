@@ -66,18 +66,21 @@ def get_text(message):
 
 
 def next_view(message):
-    client_id = dat.get_client_id(message.contact.phone_number)
-    info = dat.get_booking(client_id)
-    master_info = dat.get_masters_from_master(info[1])
-    service_info = dat.get_services_from_service(info[2])
+    try:
+        client_id = dat.get_client_id(message.contact.phone_number)
+        info = dat.get_booking(client_id)
+        master_info = dat.get_masters_from_master(info[1])
+        service_info = dat.get_services_from_service(info[2])
 
-    date = info[0].strftime('%d.%m.%Y')
-    time = info[0].strftime('%H:%M')
+        date = info[0].strftime('%d.%m.%Y')
+        time = info[0].strftime('%H:%M')
 
-    msg = f'Ось інформація про ваш запис:\nДата: {date}\nЧас на котру потрібно підійти: {time}\nІм\'я вашого майстра: ' \
-          f'{master_info[1]}\nПослуга, за якою ви звертаєтесь до нас: {service_info[1]}\nЦіна: {service_info[2]}грн'
+        msg = f'Ось інформація про ваш запис:\nДата: {date}\nЧас на котру потрібно підійти: {time}\nІм\'я вашого майстра: ' \
+              f'{master_info[1]}\nПослуга, за якою ви звертаєтесь до нас: {service_info[1]}\nЦіна: {service_info[2]}грн'
 
-    bot.send_message(message.chat.id, msg)
+        bot.send_message(message.chat.id, msg)
+    except:
+        bot.send_message(message.chat.id, 'У вас немає запису')
 
 
 @bot.callback_query_handler(func = lambda call: True)
