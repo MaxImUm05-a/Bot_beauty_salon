@@ -211,6 +211,12 @@ def next_zapys(message):
             if i == user_id:
                 dat.add_booking(info[info.index(i)+1][0], info[info.index(i)+1][1], info[info.index(i)+1][2], client_id)
 
+                booking_id = dat.get_booking(client_id, 1)
+                date_time = info[info.index(i) + 1][0]
+                schedule_id = dat.get_schedule(date_time, info[info.index(i)+1][2])
+                hour = date_time.strftime('%H')
+                dat.change_schedule(hour, booking_id, schedule_id)
+
 
 
 
