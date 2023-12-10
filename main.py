@@ -14,9 +14,9 @@ def start(message):
     time_work = types.KeyboardButton(text = 'Перегляд часу роботи')
     see_serv = types.KeyboardButton(text = 'Перегляд послуг')
     see_master = types.KeyboardButton(text = 'Перегляд майстрів')
-    see_schedule = types.KeyboardButton(text='Перегляд графіку роботи')
+    #see_schedule = types.KeyboardButton(text='Перегляд графіку роботи')
     see_my_book = types.KeyboardButton(text = 'Перегляд мого запису')
-    kb.add(time_work, see_serv, see_master)
+    kb.add(time_work, see_serv, see_master, see_my_book)
 
     msg = bot.send_message(message.chat.id, 'Що ви хочете зробити?', reply_markup=kb)
 
@@ -54,6 +54,30 @@ def get_text(message):
             kb.add(btn[rah])
 
         bot.send_message(message.chat.id, 'Ось наші майстри:', reply_markup=kb)
+
+    elif message.text == 'Перегляд мого запису':
+        keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+        reg_button = types.KeyboardButton(text="Поділитись номером телефону", request_contact=True)
+        keyboard.add(reg_button)
+        response = bot.send_message(message.chat.id,
+                                    "Поділись своїм номер телефону, будь ласка",
+                                    reply_markup=keyboard)
+        bot.register_next_step_handler(response, next_view)
+
+
+def next_view(message):
+    client_id = dat.get_client_id(message.contact.phone_number)
+    info = dat.get_booking(client_id)
+    master_info = dat.get_masters_from_master(info[1])
+    service_info = dat.get_services_from_service(info[2])
+
+    date = info[0].strftime('%d.%m.%Y')
+    time = info[0].strftime('%H:%M')
+
+    msg = f'Ось інформація про ваш запис:\nДата: {date}\nЧас на котру потрібно підійти: {time}\nІм\'я вашого майстра: ' \
+          f'{master_info[1]}\nПослуга, за якою ви звертаєтесь до нас: {service_info[1]}\nЦіна: {service_info[2]}грн'
+
+    bot.send_message(message.chat.id, msg)
 
 
 @bot.callback_query_handler(func = lambda call: True)
@@ -178,7 +202,6 @@ def next_zapys(message):
     dat.add_client(message.contact.phone_number, message.contact.first_name)
     client_id = dat.get_client_id(message.contact.phone_number)
 
-    print(info)
     user_id = message.chat.id
     for i in info:
         if isinstance(i, int):

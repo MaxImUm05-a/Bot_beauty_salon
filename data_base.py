@@ -18,10 +18,6 @@ def see_services_and_prices():
     return serv_price
 
 
-
-def see_work_schedule():
-    pass
-
 def zapys():
     """Запис клієнта"""
 
@@ -47,8 +43,20 @@ def see_masters():
 
 
 
-def see_zapys():
-    pass
+def get_booking(client_id):
+    """Отримати інформацію про запис"""
+
+    with db:
+        info = []
+
+        bookings = Booking.select().where(Booking.client_id == client_id)
+
+        for booking in bookings:
+            info.append(booking.date_time)
+            info.append(booking.master_id)
+            info.append(booking.service_id)
+
+    return info
 
 
 def get_masters_from_serv(serv_id):
