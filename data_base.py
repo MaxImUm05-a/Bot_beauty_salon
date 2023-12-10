@@ -134,6 +134,18 @@ def perevirk_schedule(time):
         return False
 
 
+def perevir_unique_clients(phone_number):
+
+    with db:
+
+        try:
+            clients = Client.select().where(Client.phone_number == phone_number)
+            for client in clients:
+                if client.phone_number == phone_number:
+                    return True
+        except:
+            return False
+
 
 def get_schedule_of_master(master_id):
     """Отримати час, на який можна записатись"""
@@ -177,30 +189,29 @@ def get_schedule_of_master(master_id):
 def change_schedule(hour, booking_id, schedule_id):
     with db:
         if hour == '8':
-            Schedule.update({Schedule.t08_09:booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t08_09:booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '9':
-            Schedule.update({Schedule.t09_10: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t09_10: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '10':
-            Schedule.update({Schedule.t10_11: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t10_11: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '11':
-            Schedule.update({Schedule.t11_12: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t11_12: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '12':
-            Schedule.update({Schedule.t12_13: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t12_13: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '13':
             Schedule.update({Schedule.t13_14: booking_id}).where(Schedule.id == schedule_id).execute()
-            print(booking_id)
         elif hour == '14':
-            Schedule.update({Schedule.t14_15: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t14_15: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '15':
-            Schedule.update({Schedule.t15_16: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t15_16: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '16':
-            Schedule.update({Schedule.t16_17: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t16_17: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '17':
-            Schedule.update({Schedule.t17_18: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t17_18: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '18':
-            Schedule.update({Schedule.t18_19: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t18_19: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '19':
-            Schedule.update({Schedule.t19_20: booking_id}).where(Schedule.id == schedule_id)
+            Schedule.update({Schedule.t19_20: booking_id}).where(Schedule.id == schedule_id).execute()
 
 
 def get_schedule(date, master_id):
@@ -223,7 +234,8 @@ def add_client(phone_number, name):
     """Створення слієнта"""
 
     with db:
-        Client(phone_number = phone_number, name = name).save()
+        if perevir_unique_clients(phone_number) == False:
+            Client(phone_number=phone_number, name=name).save()
 
 
 def get_client_id(phone_number):
