@@ -127,7 +127,18 @@ def get_text(message):
             info_msg[-1].append(msg.message_id)
 
         case 'Повернутись в меню':
-            start(message)
+            kb = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+            time_work = types.KeyboardButton(text='Перегляд часу роботи')
+            see_serv = types.KeyboardButton(text='Перегляд послуг')
+            see_master = types.KeyboardButton(text='Перегляд майстрів')
+            see_my_book = types.KeyboardButton(text='Перегляд мого запису')
+            kb.add(time_work, see_serv, see_master, see_my_book)
+
+            msg = bot.send_message(message.chat.id, 'Що ви хочете зробити?', reply_markup=kb)
+
+            info_msg.append([])
+            info_msg[-1].append(message.chat.id)
+            info_msg[-1].append(msg.message_id)
 
         case _:
             pass
