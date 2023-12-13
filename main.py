@@ -68,16 +68,20 @@ def get_text(message):
             kb = types.InlineKeyboardMarkup(row_width=2)
 
             btn = []
+            mes = 'Ось наші послуги, які ми можемо вам запропонувати:\n'
+
             for sp in serv_price:
                 btn.append(
-                    types.InlineKeyboardButton(text=sp[1] + '\n' + 'Ціна: ' + str(sp[2]), callback_data='serv' + str(sp[0])))
+                    types.InlineKeyboardButton(text=sp[1], callback_data='serv' + str(sp[0])))
+                mes = mes + sp[1] + '  ---  ' + 'ціна: ' + str(sp[2]) + '\n'
 
             for rah in range(len(btn)):
                 kb.add(btn[rah])
 
+
             info_msg = delete_msg(info_msg, message.chat.id, message.message_id)
 
-            msg = bot.send_message(message.chat.id, 'Ось наші послуги, які ми можемо вам запропонувати', reply_markup=kb)
+            msg = bot.send_message(message.chat.id, mes, reply_markup=kb)
 
             info_msg.append([])
             info_msg[-1].append(message.chat.id)
