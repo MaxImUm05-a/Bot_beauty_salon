@@ -7,62 +7,129 @@ TOKEN = '5758066916:AAHC3IZWJkvq7V9BUBolfCzO94PoYH5pKdM'
 bot = t.TeleBot(TOKEN)
 
 info = []
+info_msg = []
+
+
+def create_menu_button():
+    """Створення клавіатури, яка містить кнопку для повернення в меню"""
+
+    kb = types.ReplyKeyboardMarkup(one_time_keyboard = False)
+    menu_btn = types.KeyboardButton(text = 'Повернутись в меню')
+    kb.add(menu_btn)
+
+    return kb
+
+
+
+
+def delete_msg(info, chat_id, message_id):
+    """Видалення повідомлення"""
+
+    for i in info:
+        if chat_id == i[0]:
+            bot.delete_message(i[0], i[1])
+            bot.delete_message(chat_id, message_id)
+            del info[info.index(i)]
+            return info
+
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    global info_msg
+
     kb = types.ReplyKeyboardMarkup(one_time_keyboard=True)
     time_work = types.KeyboardButton(text = 'Перегляд часу роботи')
     see_serv = types.KeyboardButton(text = 'Перегляд послуг')
     see_master = types.KeyboardButton(text = 'Перегляд майстрів')
-    #see_schedule = types.KeyboardButton(text='Перегляд графіку роботи')
     see_my_book = types.KeyboardButton(text = 'Перегляд мого запису')
     kb.add(time_work, see_serv, see_master, see_my_book)
 
     msg = bot.send_message(message.chat.id, 'Що ви хочете зробити?', reply_markup=kb)
 
+    info_msg.append([])
+    info_msg[-1].append(message.chat.id)
+    info_msg[-1].append(msg.message_id)
+
 
 @bot.message_handler(content_types = ['text'])
 def get_text(message):
-    if message.text == 'Перегляд часу роботи':
-        bot.send_message(message.chat.id, 'Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний')
-    elif message.text == 'Перегляд послуг':
-        serv_price = dat.see_services_and_prices()
+    global info_msg
 
-        kb = types.InlineKeyboardMarkup(row_width=2)
 
-        btn = []
-        for sp in serv_price:
-            btn.append(types.InlineKeyboardButton(text = sp[1]+'\n'+'Ціна: '+str(sp[2]), callback_data = 'serv'+str(sp[0])))
+    match message.text:
+        case 'Перегляд часу роботи':
+            info_msg = delete_msg(info_msg, message.chat.id, message.message_id)
 
-        for rah in range(len(btn)):
-            kb.add(btn[rah])
+            bot.send_message(message.chat.id, 'Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний', reply_markup = create_menu_button())
 
-        msg = bot.send_message(message.chat.id, 'Ось наші послуги, які ми можемо вам запропонувати', reply_markup = kb)
+        case 'Перегляд послуг':
+            serv_price = dat.see_services_and_prices()
 
-    elif message.text == 'Перегляд майстрів':
-        masters = dat.see_masters()
-        print(masters)
+            kb = types.InlineKeyboardMarkup(row_width=2)
 
-        kb = types.InlineKeyboardMarkup(row_width=2)
+            btn = []
+            for sp in serv_price:
+                btn.append(
+                    types.InlineKeyboardButton(text=sp[1] + '\n' + 'Ціна: ' + str(sp[2]), callback_data='serv' + str(sp[0])))
 
-        btn = []
-        for mt in masters:
-            btn.append(types.InlineKeyboardButton(text='Ім\'я: '+mt[1] + ' Спеціальність: ' + str(mt[2]) + ' Досвід: ' + '%s р.' % mt[3],
-                                                  callback_data='mast' + str(mt[0])))
+            for rah in range(len(btn)):
+                kb.add(btn[rah])
 
-        for rah in range(len(btn)):
-            kb.add(btn[rah])
+            info_msg = delete_msg(info_msg, message.chat.id, message.message_id)
 
-        bot.send_message(message.chat.id, 'Ось наші майстри:', reply_markup=kb)
+            msg = bot.send_message(message.chat.id, 'Ось наші послуги, які ми можемо вам запропонувати', reply_markup=kb)
 
-    elif message.text == 'Перегляд мого запису':
-        keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True)
-        reg_button = types.KeyboardButton(text="Поділитись номером телефону", request_contact=True)
-        keyboard.add(reg_button)
-        response = bot.send_message(message.chat.id,
-                                    "Поділись своїм номер телефону, будь ласка",
-                                    reply_markup=keyboard)
-        bot.register_next_step_handler(response, next_view)
+            info_msg.append([])
+            info_msg[-1].append(message.chat.id)
+            info_msg[-1].append(msg.message_id)
+
+        case 'Перегляд майстрів':
+            masters = dat.see_masters()
+            print(masters)
+
+            kb = types.InlineKeyboardMarkup(row_width=2)
+
+            btn = []
+            for mt in masters:
+                btn.append(types.InlineKeyboardButton(
+                    text='Ім\'я: ' + mt[1] + ' Спеціальність: ' + str(mt[2]) + ' Досвід: ' + '%s р.' % mt[3],
+                    callback_data='mast' + str(mt[0])))
+
+            for rah in range(len(btn)):
+                kb.add(btn[rah])
+
+            info_msg = delete_msg(info_msg, message.chat.id, message.message_id)
+
+            msg = bot.send_message(message.chat.id, 'Ось наші майстри:', reply_markup=kb)
+
+            info_msg.append([])
+            info_msg[-1].append(message.chat.id)
+            info_msg[-1].append(msg.message_id)
+
+        case 'Перегляд мого запису':
+            keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+            reg_button = types.KeyboardButton(text="Поділитись номером телефону", request_contact=True)
+            keyboard.add(reg_button)
+            response = bot.send_message(message.chat.id,
+                                        "Поділись своїм номер телефону, будь ласка",
+                                        reply_markup=keyboard)
+
+            info_msg = delete_msg(info_msg, message.chat.id, message.message_id)
+
+            msg = bot.register_next_step_handler(response, next_view)
+
+            info_msg.append([])
+            info_msg[-1].append(message.chat.id)
+            info_msg[-1].append(msg.message_id)
+
+        case 'Повернутись в меню':
+            start(message)
+
+        case _:
+            pass
+
+
+
 
 
 def next_view(message):
@@ -86,6 +153,8 @@ def next_view(message):
 @bot.callback_query_handler(func = lambda call: True)
 def callback(call):
     if 'serv' in call.data:
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+
         serv_id = int(call.data[4:])
         masters_id = dat.get_masters_from_serv(serv_id)
         masters = []
@@ -104,6 +173,8 @@ def callback(call):
         bot.send_message(call.message.chat.id, 'Ось наші майстри, які пропонують цю послугу:', reply_markup=kb)
 
     if 'mast' in call.data:
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+
         mast_id = int(call.data[4:])
         services_id = dat.get_services_from_mast(mast_id)
         services = []
@@ -120,6 +191,8 @@ def callback(call):
         bot.send_message(call.message.chat.id, 'Ось послуги, які пропонує цей майстер', reply_markup=kb)
 
     if 'book' in call.data:
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+
         serv_mast = call.data.split(' ')
         service_id = serv_mast[1]
         master_id = serv_mast[2]
@@ -152,6 +225,8 @@ def callback(call):
         bot.send_message(call.message.chat.id, msg, reply_markup = kb)
 
     if 'booday' in call.data:
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+
         serv_mast = call.data.split(' ')
         day = serv_mast[1]
         service_id = serv_mast[2]
@@ -172,6 +247,7 @@ def callback(call):
 
     if 'boohour' in call.data:
         global info
+        bot.delete_message(call.message.chat.id, call.message.message_id)
 
         user_id = call.message.chat.id
         info.append(user_id)
@@ -216,6 +292,8 @@ def next_zapys(message):
                 schedule_id = dat.get_schedule(date_time, info[info.index(i)+1][2])
                 hour = date_time.strftime('%H')
                 dat.change_schedule(hour, booking_id, schedule_id)
+
+                bot.send_message(message.chat.id, 'Ви зробили запис!', reply_markup = create_menu_button())
 
 
 

@@ -18,12 +18,6 @@ def see_services_and_prices():
     return serv_price
 
 
-def zapys():
-    """Запис клієнта"""
-
-    with db:
-        pass
-
 def see_masters():
     """Подивитися майстрів"""
 
@@ -137,14 +131,14 @@ def perevirk_schedule(time):
 def perevir_unique_clients(phone_number):
 
     with db:
+        clients = Client.select().where(Client.phone_number == phone_number)
 
-        try:
-            clients = Client.select().where(Client.phone_number == phone_number)
-            for client in clients:
-                if client.phone_number == phone_number:
-                    return True
-        except:
-            return False
+        for client in clients:
+            if client.phone_number == phone_number:
+                return True
+
+        return False
+
 
 
 def get_schedule_of_master(master_id):
@@ -189,7 +183,7 @@ def get_schedule_of_master(master_id):
 def change_schedule(hour, booking_id, schedule_id):
     with db:
         if hour == '8':
-            Schedule.update({Schedule.t08_09:booking_id}).where(Schedule.id == schedule_id).execute()
+            Schedule.update({Schedule.t08_09: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '9':
             Schedule.update({Schedule.t09_10: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '10':
