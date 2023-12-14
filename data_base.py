@@ -143,6 +143,7 @@ def perevir_unique_clients(phone_number):
             for client in clients:
                 if client.phone_number == phone_number:
                     return True
+            return False
         except:
             return False
 

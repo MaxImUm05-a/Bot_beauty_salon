@@ -24,46 +24,49 @@ def start(message):
 
 @bot.message_handler(content_types = ['text'])
 def get_text(message):
-    if message.text == 'Перегляд часу роботи':
-        bot.send_message(message.chat.id, 'Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний')
-    elif message.text == 'Перегляд послуг':
-        serv_price = dat.see_services_and_prices()
 
-        kb = types.InlineKeyboardMarkup(row_width=2)
+    match message.text:
+        case 'Перегляд часу роботи':
+            bot.send_message(message.chat.id, 'Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний')
 
-        btn = []
-        for sp in serv_price:
-            btn.append(types.InlineKeyboardButton(text = sp[1]+'\n'+'Ціна: '+str(sp[2]), callback_data = 'serv'+str(sp[0])))
+        case 'Перегляд послуг':
+            serv_price = dat.see_services_and_prices()
+            kb = types.InlineKeyboardMarkup(row_width=2)
+            btn = []
+            msg = 'Ось наші послуги, які ми можемо вам запропонувати:\n'
+            for sp in serv_price:
+                btn.append(types.InlineKeyboardButton(text=sp[1], callback_data='serv' + str(sp[0])))
+                msg = msg + sp[1] + '  ---  ' + 'ціна: ' + str(sp[2]) + '\n'
+            [kb.add(b) for b in btn]
+            bot.send_message(message.chat.id, msg, reply_markup=kb)
 
-        for rah in range(len(btn)):
-            kb.add(btn[rah])
+        case 'Перегляд майстрів':
+            masters = dat.see_masters()
+            kb = types.InlineKeyboardMarkup(row_width=2)
 
-        msg = bot.send_message(message.chat.id, 'Ось наші послуги, які ми можемо вам запропонувати', reply_markup = kb)
+            msg = 'Ось наші майстри:\n'
 
-    elif message.text == 'Перегляд майстрів':
-        masters = dat.see_masters()
-        print(masters)
+            btn = []
+            for mt in masters:
+                btn.append(types.InlineKeyboardButton(
+                    text=mt[1] + ', ' + str(mt[2]),
+                    callback_data='mast' + str(mt[0])))
+                msg = msg + 'Ім\'я: ' + mt[1] + ' - спеціальність: ' + str(mt[2]) + ' - досвід: ' + '%s р.' % mt[3] + '\n'
 
-        kb = types.InlineKeyboardMarkup(row_width=2)
+            [kb.add(b) for b in btn]
+            bot.send_message(message.chat.id, msg, reply_markup=kb)
 
-        btn = []
-        for mt in masters:
-            btn.append(types.InlineKeyboardButton(text='Ім\'я: '+mt[1] + ' Спеціальність: ' + str(mt[2]) + ' Досвід: ' + '%s р.' % mt[3],
-                                                  callback_data='mast' + str(mt[0])))
+        case 'Перегляд мого запису':
+            keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+            reg_button = types.KeyboardButton(text="Поділитись номером телефону", request_contact=True)
+            keyboard.add(reg_button)
+            response = bot.send_message(message.chat.id,
+                                        "Поділись своїм номер телефону, будь ласка",
+                                        reply_markup=keyboard)
+            bot.register_next_step_handler(response, next_view)
 
-        for rah in range(len(btn)):
-            kb.add(btn[rah])
-
-        bot.send_message(message.chat.id, 'Ось наші майстри:', reply_markup=kb)
-
-    elif message.text == 'Перегляд мого запису':
-        keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True)
-        reg_button = types.KeyboardButton(text="Поділитись номером телефону", request_contact=True)
-        keyboard.add(reg_button)
-        response = bot.send_message(message.chat.id,
-                                    "Поділись своїм номер телефону, будь ласка",
-                                    reply_markup=keyboard)
-        bot.register_next_step_handler(response, next_view)
+        case _:
+            pass
 
 
 def next_view(message):
@@ -94,15 +97,17 @@ def callback(call):
             masters.append(dat.get_masters_from_master(master_id))
 
         kb = types.InlineKeyboardMarkup(row_width=3)
+
+        msg = 'Ось наші майстри:\n'
+
         btn = []
         for mt in masters:
             btn.append(types.InlineKeyboardButton(
-                text='Ім\'я: ' + mt[1] + ' Спеціальність: ' + str(mt[2]) + ' Досвід: ' + '%s р.' % mt[3],
-                callback_data='book ' + str(serv_id) + ' ' + str(mt[0])))
-        for rah in range(len(btn)):
-            kb.add(btn[rah])
+                text=mt[1] + ', ' + str(mt[2]), callback_data='book ' + str(serv_id) + ' ' + str(mt[0])))
+            msg = msg + 'Ім\'я: ' + mt[1] + ' - спеціальність: ' + str(mt[2]) + ' - досвід: ' + '%s р.' % mt[3] + '\n'
 
-        bot.send_message(call.message.chat.id, 'Ось наші майстри, які пропонують цю послугу:', reply_markup=kb)
+        [kb.add(b) for b in btn]
+        bot.send_message(call.message.chat.id, msg, reply_markup=kb)
 
     if 'mast' in call.data:
         mast_id = int(call.data[4:])
@@ -112,13 +117,14 @@ def callback(call):
             services.append(dat.get_services_from_service(service_id))
 
         kb = types.InlineKeyboardMarkup(row_width=3)
-        btn = []
-        for sv in services:
-            btn.append(types.InlineKeyboardButton(text = sv[1]+'\n'+'Ціна: '+str(sv[2]), callback_data = 'book '+str(sv[0]) +' '+ str(mast_id)))
-        for rah in range(len(btn)):
-            kb.add(btn[rah])
 
-        bot.send_message(call.message.chat.id, 'Ось послуги, які пропонує цей майстер', reply_markup=kb)
+        btn = []
+        msg = 'Ось наші послуги, які пропонує цей майстер:\n'
+        for sp in services:
+            btn.append(types.InlineKeyboardButton(text=sp[1], callback_data='book '+str(sp[0]) +' '+ str(mast_id)))
+            msg = msg + sp[1] + '  ---  ' + 'ціна: ' + str(sp[2]) + '\n'
+        [kb.add(b) for b in btn]
+        bot.send_message(call.message.chat.id, msg, reply_markup=kb)
 
     if 'book' in call.data:
         serv_mast = call.data.split(' ')
@@ -217,6 +223,8 @@ def next_zapys(message):
                 schedule_id = dat.get_schedule(date_time, info[info.index(i)+1][2])
                 hour = date_time.strftime('%H')
                 dat.change_schedule(hour, booking_id, schedule_id)
+
+                bot.send_message(message.chat.id, 'Ви записані!')
 
 
 
