@@ -38,6 +38,7 @@ def get_text(message):
                 btn.append(types.InlineKeyboardButton(text=sp[1], callback_data='serv' + str(sp[0])))
                 msg = msg + sp[1] + '  ---  ' + 'ціна: ' + str(sp[2]) + '\n'
             [kb.add(b) for b in btn]
+
             bot.send_message(message.chat.id, msg, reply_markup=kb)
 
         case 'Перегляд майстрів':
@@ -107,6 +108,7 @@ def callback(call):
             msg = msg + 'Ім\'я: ' + mt[1] + ' - спеціальність: ' + str(mt[2]) + ' - досвід: ' + '%s р.' % mt[3] + '\n'
 
         [kb.add(b) for b in btn]
+
         bot.send_message(call.message.chat.id, msg, reply_markup=kb)
 
     if 'mast' in call.data:
@@ -203,6 +205,7 @@ def callback(call):
         response = bot.send_message(call.message.chat.id,
                                     "Поділись своїм номер телефону, будь ласка",
                                     reply_markup=keyboard)
+
         bot.register_next_step_handler(response, next_zapys)
 
 
@@ -223,6 +226,10 @@ def next_zapys(message):
                 schedule_id = dat.get_schedule(date_time, info[info.index(i)+1][2])
                 hour = date_time.strftime('%H')
                 dat.change_schedule(hour, booking_id, schedule_id)
+
+                ind = info.index(i)
+                del info[ind]
+                del info[ind]
 
                 bot.send_message(message.chat.id, 'Ви записані!')
 
