@@ -14,8 +14,7 @@ def start(message):
     time_work = types.KeyboardButton(text = 'Перегляд часу роботи')
     see_serv = types.KeyboardButton(text = 'Перегляд послуг')
     see_master = types.KeyboardButton(text = 'Перегляд майстрів')
-    #see_schedule = types.KeyboardButton(text='Перегляд графіку роботи')
-    see_my_book = types.KeyboardButton(text = 'Перегляд мого запису')
+    see_my_book = types.KeyboardButton(text = 'Перегляд моїх записів')
     kb.add(time_work, see_serv, see_master, see_my_book)
 
 
@@ -27,7 +26,14 @@ def get_text(message):
 
     match message.text:
         case 'Перегляд часу роботи':
-            bot.send_message(message.chat.id, 'Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний')
+            kb = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+            time_work = types.KeyboardButton(text='Перегляд часу роботи')
+            see_serv = types.KeyboardButton(text='Перегляд послуг')
+            see_master = types.KeyboardButton(text='Перегляд майстрів')
+            see_my_book = types.KeyboardButton(text='Перегляд мого запису')
+            kb.add(time_work, see_serv, see_master, see_my_book)
+
+            bot.send_message(message.chat.id, 'Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний', reply_markup = kb)
 
         case 'Перегляд послуг':
             serv_price = dat.see_services_and_prices()
@@ -57,7 +63,7 @@ def get_text(message):
             [kb.add(b) for b in btn]
             bot.send_message(message.chat.id, msg, reply_markup=kb)
 
-        case 'Перегляд мого запису':
+        case 'Перегляд моїх записів':
             keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True)
             reg_button = types.KeyboardButton(text="Поділитись номером телефону", request_contact=True)
             keyboard.add(reg_button)
@@ -71,21 +77,35 @@ def get_text(message):
 
 
 def next_view(message):
+    kb = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    time_work = types.KeyboardButton(text='Перегляд часу роботи')
+    see_serv = types.KeyboardButton(text='Перегляд послуг')
+    see_master = types.KeyboardButton(text='Перегляд майстрів')
+    see_my_book = types.KeyboardButton(text='Перегляд моїх записів')
+    kb.add(time_work, see_serv, see_master, see_my_book)
+
     try:
         client_id = dat.get_client_id(message.contact.phone_number)
         info = dat.get_booking(client_id)
-        master_info = dat.get_masters_from_master(info[1])
-        service_info = dat.get_services_from_service(info[2])
 
-        date = info[0].strftime('%d.%m.%Y')
-        time = info[0].strftime('%H:%M')
+        msgs = []
+        for i in info:
+            master_info = dat.get_masters_from_master(i[1])
+            service_info = dat.get_services_from_service(i[2])
 
-        msg = f'Ось інформація про ваш запис:\nДата: {date}\nЧас на котру потрібно підійти: {time}\nІм\'я вашого майстра: ' \
-              f'{master_info[1]}\nПослуга, за якою ви звертаєтесь до нас: {service_info[1]}\nЦіна: {service_info[2]}грн'
+            date = i[0].strftime('%d.%m.%Y')
+            time = i[0].strftime('%H:%M')
 
-        bot.send_message(message.chat.id, msg)
+            msgs.append(f'Дата: {date}\nЧас на котру потрібно підійти: {time}\nІм\'я вашого майстра: '
+                  f'{master_info[1]}\nПослуга, за якою ви звертаєтесь до нас: {service_info[1]}\nЦіна: {service_info[2]}грн')
+
+        msg = 'Ось інформація про ваші записи:\n' + '\n\n'.join(msgs)
+
+
+
+        bot.send_message(message.chat.id, msg, reply_markup = kb)
     except:
-        bot.send_message(message.chat.id, 'У вас немає запису')
+        bot.send_message(message.chat.id, 'У вас немає запису', reply_markup = kb)
 
 
 @bot.callback_query_handler(func = lambda call: True)
@@ -231,7 +251,16 @@ def next_zapys(message):
                 del info[ind]
                 del info[ind]
 
-                bot.send_message(message.chat.id, 'Ви записані!')
+                kb = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+                time_work = types.KeyboardButton(text='Перегляд часу роботи')
+                see_serv = types.KeyboardButton(text='Перегляд послуг')
+                see_master = types.KeyboardButton(text='Перегляд майстрів')
+                see_my_book = types.KeyboardButton(text='Перегляд мого запису')
+                kb.add(time_work, see_serv, see_master, see_my_book)
+
+                bot.send_message(message.chat.id, 'Ви записані!', reply_markup = kb)
+
+
 
 
 

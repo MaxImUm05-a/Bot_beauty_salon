@@ -52,9 +52,10 @@ def get_booking(client_id, need_id = 0):
         bookings = Booking.select().where(Booking.client_id == client_id)
 
         for booking in bookings:
-            info.append(booking.date_time)
-            info.append(booking.master_id)
-            info.append(booking.service_id)
+            info.append([])
+            info[-1].append(booking.date_time)
+            info[-1].append(booking.master_id)
+            info[-1].append(booking.service_id)
             id = booking.id_booking
 
     if need_id == 0:
