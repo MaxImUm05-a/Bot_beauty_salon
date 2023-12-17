@@ -190,9 +190,9 @@ def get_schedule_of_master(master_id):
 
 def change_schedule(hour, booking_id, schedule_id):
     with db:
-        if hour == '8':
+        if hour == '08':
             Schedule.update({Schedule.t08_09:booking_id}).where(Schedule.id == schedule_id).execute()
-        elif hour == '9':
+        elif hour == '09':
             Schedule.update({Schedule.t09_10: booking_id}).where(Schedule.id == schedule_id).execute()
         elif hour == '10':
             Schedule.update({Schedule.t10_11: booking_id}).where(Schedule.id == schedule_id).execute()
@@ -271,8 +271,8 @@ def add_serv_has_mstr():
 def add_schedule():
 
     with db:
-        Schedule(master_id = 1, date = dt.date(year = 2024, month = 2, day = 14), t08_09 = None, t09_10 = None, t10_11 = None, t11_12 = 0, t12_13 = 0,
-                 t13_14 = 0, t14_15 = None, t15_16 = 0, t16_17 = 0, t17_18 = 0, t18_19 = None, t19_20 = None).save()
+        Schedule(master_id=2, date=dt.date(year=2024, month=1, day=3), t08_09=0, t09_10=None, t10_11=None, t11_12=0,
+                 t12_13=0, t13_14=0, t14_15=None, t15_16=0, t16_17=0, t17_18=0, t18_19=None, t19_20=None).save()
 
 # see_services_and_prices()
 # add_service()
