@@ -30,7 +30,7 @@ def get_text(message):
             time_work = types.KeyboardButton(text='Перегляд часу роботи')
             see_serv = types.KeyboardButton(text='Перегляд послуг')
             see_master = types.KeyboardButton(text='Перегляд майстрів')
-            see_my_book = types.KeyboardButton(text='Перегляд мого запису')
+            see_my_book = types.KeyboardButton(text='Перегляд моїх записів')
             kb.add(time_work, see_serv, see_master, see_my_book)
 
             bot.send_message(message.chat.id, 'Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний', reply_markup = kb)
@@ -241,12 +241,10 @@ def next_zapys(message):
             if i == user_id:
                 dat.add_booking(info[info.index(i)+1][0], info[info.index(i)+1][1], info[info.index(i)+1][2], client_id)
 
-                print(info)
                 booking_id = dat.get_booking(client_id, 1)
                 date_time = info[info.index(i) + 1][0]
                 schedule_id = dat.get_schedule(date_time, info[info.index(i)+1][2])
                 hour = date_time.strftime('%H')
-                print(hour, booking_id, schedule_id)
                 dat.change_schedule(hour, booking_id, schedule_id)
 
                 ind = info.index(i)
@@ -257,7 +255,7 @@ def next_zapys(message):
                 time_work = types.KeyboardButton(text='Перегляд часу роботи')
                 see_serv = types.KeyboardButton(text='Перегляд послуг')
                 see_master = types.KeyboardButton(text='Перегляд майстрів')
-                see_my_book = types.KeyboardButton(text='Перегляд мого запису')
+                see_my_book = types.KeyboardButton(text='Перегляд моїх записів')
                 kb.add(time_work, see_serv, see_master, see_my_book)
 
                 bot.send_message(message.chat.id, 'Ви записані!', reply_markup = kb)
