@@ -18,12 +18,6 @@ def see_services_and_prices():
     return serv_price
 
 
-def zapys():
-    """Запис клієнта"""
-
-    with db:
-        pass
-
 def see_masters():
     """Подивитися майстрів"""
 
@@ -91,6 +85,7 @@ def get_masters_from_master(master_id):
             mstrs.append(master.name)
             mstrs.append(master.specialty)
             mstrs.append(master.experience)
+            mstrs.append(master.instagram)
 
     return mstrs
 
@@ -260,7 +255,8 @@ def add_service():
 def add_master():
 
     with db:
-        Master(name = 'Стефанія', specialty = 'перукар', experience = 2).save()
+        Master(name = 'Стефанія', specialty = 'перукар', experience = 2,
+               instagram = 'https://uk.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D1%83%D0%BA%D0%B0%D1%80%D0%BD%D1%8F').save()
 
 def add_serv_has_mstr():
 

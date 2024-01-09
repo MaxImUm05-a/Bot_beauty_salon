@@ -33,7 +33,8 @@ def get_text(message):
             see_my_book = types.KeyboardButton(text='Перегляд моїх записів')
             kb.add(time_work, see_serv, see_master, see_my_book)
 
-            bot.send_message(message.chat.id, 'Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний', reply_markup = kb)
+            #bot.send_message(message.chat.id, 'Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний', reply_markup = kb)
+            bot.edit_message_text('Ми працюємо\nПн-Пт  з 8:00 до 20:00\nСб-Нд  вихідний', message.chat.id, reply_markup = kb)
 
         case 'Перегляд послуг':
             serv_price = dat.see_services_and_prices()
@@ -58,7 +59,7 @@ def get_text(message):
                 btn.append(types.InlineKeyboardButton(
                     text=mt[1] + ', ' + str(mt[2]),
                     callback_data='mast' + str(mt[0])))
-                msg = msg + 'Ім\'я: ' + mt[1] + ' - спеціальність: ' + str(mt[2]) + ' - досвід: ' + '%s р.' % mt[3] + '\n'
+                msg = msg + mt[1] + ' - ' + str(mt[2]) + ' - ' + '%s р.' % mt[3] + ' - ' + mt[4] +'\n'
 
             [kb.add(b) for b in btn]
             bot.send_message(message.chat.id, msg, reply_markup=kb)
@@ -125,7 +126,7 @@ def callback(call):
         for mt in masters:
             btn.append(types.InlineKeyboardButton(
                 text=mt[1] + ', ' + str(mt[2]), callback_data='book ' + str(serv_id) + ' ' + str(mt[0])))
-            msg = msg + 'Ім\'я: ' + mt[1] + ' - спеціальність: ' + str(mt[2]) + ' - досвід: ' + '%s р.' % mt[3] + '\n'
+            msg = msg + mt[1] + ' - ' + str(mt[2]) + ' - ' + '%s р.' % mt[3] + ' - ' + mt[4] + '\n'
 
         [kb.add(b) for b in btn]
 

@@ -1,6 +1,6 @@
 import peewee as pw
 
-db = pw.SqliteDatabase('krasunya2.db')
+db = pw.SqliteDatabase('krasunya3.db')
 
 
 class BaseModel(pw.Model):
@@ -14,6 +14,7 @@ class Master(BaseModel):
     name = pw.TextField(null = False)
     specialty = pw.TextField(null = False)
     experience = pw.FloatField(null = False)
+    instagram = pw.TextField(null = False)
 
     class Meta:
         order_by = 'id_master'
