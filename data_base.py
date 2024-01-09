@@ -32,6 +32,7 @@ def see_masters():
             mstrs[-1].append(master.name)
             mstrs[-1].append(master.specialty)
             mstrs[-1].append(master.experience)
+            mstrs[-1].append(master.instagram)
 
     return mstrs
 
